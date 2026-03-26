@@ -4,7 +4,7 @@
 
 文档地址：https://juejin.cn/post/7036011047391592485
 
-目标：增加处理高并发功能
+目标：增加原文档shop处理高并发功能
 
 ## P1-环境搭建
 
@@ -528,18 +528,20 @@ mall/
 1.纵向三层分层模型：
 ```
 
-
 ```
+
 ```
 
 **API 层 (Gateway)**：对外暴露的 HTTP 接口，负责路由转发、参数校验及响应封装。
 
 ```
+
 ```
 
 **RPC 层 (Service)**：核心业务逻辑所在地，负责数据持久化、跨服务调用及事务控制。
 
 ```
+
 ```
 
 **Model 层 (Data Access)**：数据库操作的抽象，包含自动集成的 Redis 一致性缓存。
@@ -554,11 +556,9 @@ mall/
 代码启动时生成一个svcCtx，避免数据库与 Redis 连接数在并发下爆炸。
 ```
 
-
 ```
 原理：
 ```
-
 
 ```markdown
 这背后主要依靠两个机制：生命周期管理 和 内置连接池。
@@ -682,10 +682,10 @@ func (c cacheNode) doTake(ctx context.Context, v interface{}, key string,
     // 作用：瞬时 1000 个请求过来，DoEx 保证只有一个去查后端，其它人原地坐等。
     // fresh 为 true 代表你是去干活的那个人；false 代表你是白嫖结果的人。
     val, fresh, err := c.barrier.DoEx(key, func() (interface{}, error) {
-     
+   
        // 【2. 二重检查 - 读 Redis】
        if err := c.doGetCache(ctx, key, v); err != nil {
-        
+      
           // 【3. 防穿透 - 占位符判断】
           // 如果 Redis 存的是 "*"，说明 DB 也没有，直接报错返回，保护 DB。
           if err == errPlaceholder {
