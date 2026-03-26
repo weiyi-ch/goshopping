@@ -11,3 +11,8 @@ ProductRpc:
 Auth:
   AccessSecret: uOvKLmVfztaXGpNYd4Z0I1SiT7MweJhl
   AccessExpire: 86400
+
+Kafka:
+  Addrs:
+    - kafka:9092
+  Topic: cache-sync-topic

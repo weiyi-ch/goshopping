@@ -182,3 +182,54 @@ services:
     networks:
       - backend
     restart: always
+  # --- Kafka 消息队列 ---
+  zookeeper:
+    build:
+      context: ./zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - TZ=${TZ}
+    ports:
+      - "${ZOOKEEPER_PORT}:2181"
+    platform: linux/amd64
+    volumes:
+      - ${DATA_PATH_HOST}/zookeeper:/bitnami/zookeeper  # 数据持久化
+    networks:
+      - backend
+    restart: always
+
+  kafka:
+    build:
+      context: ./kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - TZ=${TZ}
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
+    ports:
+      - "${KAFKA_PORT}:9092"
+    platform: linux/amd64
+    volumes:
+      - ${DATA_PATH_HOST}/kafka:/bitnami/kafka          # 数据持久化
+    networks:
+      - backend
+    restart: always
+
+  # --- Kafka 可视化管理 ---
+  kafka-manage:
+    build:
+      context: ./kafka-manage
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=${KAFKA_MANAGE_CONNECT_HOST}:${KAFKA_MANAGE_CONNECT_PORT}
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    ports:
+      - "${KAFKA_MANAGE_PORT}:8080"
+    depends_on:
+      - kafka
+    networks:
+      - backend
+    restart: always

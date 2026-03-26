@@ -12,4 +12,8 @@ type Config struct {
 	}
 
 	CacheRedis cache.CacheConf
+	Kafka      struct {
+		Addrs []string
+		Topic string
+	}
 }

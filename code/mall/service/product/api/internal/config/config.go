@@ -15,4 +15,8 @@ type Config struct {
 		AccessExpire int64
 	}
 	ProductRpc zrpc.RpcClientConf
+	Kafka      struct {
+		Addrs []string
+		Topic string
+	}
 }
