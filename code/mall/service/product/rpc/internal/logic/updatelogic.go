@@ -59,7 +59,7 @@ func (l *UpdateLogic) Update(in *product.UpdateRequest) (*product.UpdateResponse
 	// 🔥 4. 【核心新增】发送 Kafka 消息，通知所有 API 节点清理本地 L1 缓存
 	// 我们只需要把 ID 发送过去即可，API 节点收到后会执行 LocalCache.Del("api:product:ID")
 	productIdStr := strconv.FormatUint(uint64(in.Id), 10)
-
+	logx.Infof("🚀 准备发送 Kafka 消息，ID: %s", productIdStr)
 	// 使用异步 Push，不影响主业务响应速度
 	err = l.svcCtx.KqPusher.Push(l.ctx, productIdStr)
 	if err != nil {

@@ -1,1 +1,1 @@
-From swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/bitnami/kafka:latest
+From swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/bitnamilegacy/kafka:3.5.1

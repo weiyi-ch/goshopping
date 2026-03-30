@@ -69,6 +69,11 @@ func (s *ServiceContext) initRpcLocalCacheWatcher() {
 		// 删除缓存操作需线程安全，确保 LocalCache 实现支持并发
 		if s.LocalCache != nil {
 			s.LocalCache.Del(cacheKey)
+			if _, ok := s.LocalCache.Get(cacheKey); ok {
+				fmt.Println("失败：Key 依然存在，可能删错对象了")
+			} else {
+				fmt.Println("成功：本地缓存已清空")
+			}
 		}
 
 		// 异步记录日志，减少高并发压力
@@ -82,5 +87,10 @@ func (s *ServiceContext) initRpcLocalCacheWatcher() {
 	}
 
 	// 启动消费者（非阻塞）
-	go q.Start()
+	go func() {
+		logx.Infof("🚀 Kafka 消费者正在后台启动 [Topic: %s]", s.Config.Kafka.Topic)
+		q.Start()
+		// 如果走到这一行，说明消费者因为错误退出了
+		logx.Errorf("❌ 警报：Kafka 消费者已异常退出！")
+	}()
 }
